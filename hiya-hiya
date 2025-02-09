@@ -1,0 +1,11 @@
+network:
+    ethernets:
+        ens18:
+            dhcp4: false
+            addresses: [10.10.10.145]
+            routes:
+            - to: default
+              via: 10.10.10.254
+            nameservers:
+              addresses: [1.1.1.1, 8.8.4.4]
+    version: 2
