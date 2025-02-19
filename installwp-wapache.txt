@@ -1,0 +1,40 @@
+#Install php, mysql-server dan apache2
+apt install php php-mysql apache2 mysql-server
+#install bind9
+apt install bind9 resolvconf dnsutils -y
+#Cp file db.local untuk forward zone dan db.127 untuk reverse zone
+cp db.local namamu.com && cp db.127 namamu.com.reverse
+#Buka file forward zone yang sudah dicopy tadi,file forward berfungsi merubah domain menjadi IP Address
+nano fileforwardkamu
+nano filereversekamu
+#Selanjutnya menambahkan Forward dan Reverse Zone pada file berikut
+nano named.conf.local
+#restart BIND9
+systemctl restart named.service
+#Buka file resolv.conf dan Tambahkan nameserver masing-masing pada setting resolv.conf
+nano /etc/resolv.conf
+#tes nslookup
+#setdb
+#masuk mysql (setup)
+mysql -u root -p
+create database (nama database); #Buat database 
+create user ‘nama’@’localhost’ identified by ‘pasword’; #create user
+grant all privileges on (nama database yang dibuat).* to ‘nama’@’localhost’; #grant privileges
+flush privileges 
+#Masuk ke dir var/www, dan donlod wp
+cd /var/www
+wget https://wordpress.org/latest.tar.gz
+#ekstrak folder latest.tar.gz
+tar xf latest.tar.gz
+#masuk wordpress dan copy file
+cd wordpress/
+cp wp-config-sample.php wp-config.php
+#masuk ke wp-config.php
+#Masuk ke /etc/apache2/sites-available/000-default.conf dan ubah 2 syntax
+ServeAdmin 'bebas'@localhost
+DocumentRoot 'samakan dengan direktori penyimpanan wordpress'
+#Ubah hak izin akses apache
+chown -R www-data:www-data wordpress
+chmod -R 755 wordpress
+#Restart apache2
+systemctl restart apache2
