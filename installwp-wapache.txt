@@ -3,12 +3,54 @@ apt install php php-mysql apache2 mysql-server
 #install bind9
 apt install bind9 resolvconf dnsutils -y
 #Cp file db.local untuk forward zone dan db.127 untuk reverse zone
+nano /etc/bind
 cp db.local namamu.com && cp db.127 namamu.com.reverse
 #Buka file forward zone yang sudah dicopy tadi,file forward berfungsi merubah domain menjadi IP Address
 nano fileforwardkamu
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     ukk-randi.net. root.ukk-randi.net. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ukk-randi.net.
+
+; Letak domain atau record
+@       IN      A       10.10.10.110
+www.ukk-randi.net.      IN      CNAME   ukk-randi.net.
 nano filereversekamu
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     ukk-randi.net. root.ukk-randi.net. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+; Letak Pointer
+@       IN      NS      ukk-randi.net.
+110     IN      PTR     ukk-randi.net.
+110     IN      PTR     www.ukk-randi.net.
 #Selanjutnya menambahkan Forward dan Reverse Zone pada file berikut
 nano named.conf.local
+// Forward Zone
+zone "ukk-namaKamu.net" {
+        type master;
+        file "/etc/bind/ukk-namaKamu.net";
+};
+
+// Reverse Zone
+zone "10.10.10.in-addr.arpa" {
+        type master;
+        file "/etc/bind/ukk-namaKamu.net.reverse";
+};
 #restart BIND9
 systemctl restart named.service
 #Buka file resolv.conf dan Tambahkan nameserver masing-masing pada setting resolv.conf
